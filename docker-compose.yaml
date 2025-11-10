@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abudev99
+      POSTGRES_DB: quiz
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  nest_backend:
+    build: ./quiz
+    container_name: nest_backend
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./quiz/.env    # <--- sizning .env faylingiz
+    depends_on:
+      - db
+
+  react_frontend:
+    build: ./quiz-front
+    container_name: react_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - nest_backend
+
+volumes:
+  db_data:
